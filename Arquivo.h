@@ -34,10 +34,10 @@ void iniciarBitWriter(BitWriter *writer, const char *nomeArquivo)
 void escreverBit(BitWriter *writer, char bitChar)
 {
     unsigned char valor;
-    
-    if(bitChar == '1')
-        valor = 1; 
-    else 
+
+    if (bitChar == '1')
+        valor = 1;
+    else
         valor = 0;
 
     switch (writer->contador)
@@ -171,7 +171,7 @@ void codificarFrase(char texto[], ListaPalavra *lista, BitWriter *writer)
 
     vetSeparador[1] = '\0';
 
-    while (i <= (int)strlen(texto))
+    while (i <= strlen(texto))
     {
         vetTexto[j++] = tolower((unsigned char)texto[i]);
 
@@ -196,23 +196,27 @@ void codificarFrase(char texto[], ListaPalavra *lista, BitWriter *writer)
     }
 }
 
-char *binarioParaString(const char *nomeArquivo)
+void binarioParaString(const char *nomeArquivo, char stringBits[], int capacidade, int *sucesso)
 {
     FILE *arquivo = fopen(nomeArquivo, "rb");
-    if (arquivo)
+    ByteUnion byteUnion;
+    int indice = 0;
+
+    stringBits[0] = '\0';
+    *sucesso = 0;
+    if (arquivo == NULL)
+        printf("Erro ao abrir o arquivo codificado: %s\n", nomeArquivo);
+    else
     {
-        fseek(arquivo, 0, 2);
-        int tamanhoBytes = ftell(arquivo);
-        rewind(arquivo);
-
-        int tamanhoString = (tamanhoBytes * 8) + 1;
-        char *stringBits = (char *)malloc(sizeof(char) * tamanhoString);
-        if (stringBits != NULL)
+        *sucesso = 1;
+        while (*sucesso && fread(&byteUnion.byte, 1, 1, arquivo) == 1)
         {
-            ByteUnion byteUnion;
-            int indice = 0;
-
-            while (fread(&byteUnion.byte, 1, 1, arquivo) == 1)
+            if (indice + 8 >= capacidade)
+            {
+                printf("Codigo excede o limite de %d bits.\n", capacidade - 1);
+                *sucesso = 0;
+            }
+            else
             {
                 stringBits[indice++] = byteUnion.bi.b7 + '0';
                 stringBits[indice++] = byteUnion.bi.b6 + '0';
@@ -223,14 +227,16 @@ char *binarioParaString(const char *nomeArquivo)
                 stringBits[indice++] = byteUnion.bi.b1 + '0';
                 stringBits[indice++] = byteUnion.bi.b0 + '0';
             }
-
-            stringBits[indice] = '\0';
-            fclose(arquivo);
-            return stringBits;
         }
+        if (*sucesso && !feof(arquivo))
+        {
+            printf("Erro ao ler o arquivo codificado.\n");
+            *sucesso = 0;
+        }
+        if (*sucesso)
+            stringBits[indice] = '\0';
+        else
+            stringBits[0] = '\0';
         fclose(arquivo);
     }
-
-    printf("Erro\n");
-    return NULL;
 }

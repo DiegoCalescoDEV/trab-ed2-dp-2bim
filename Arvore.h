@@ -1,17 +1,19 @@
-typedef struct tree {
-	int simbolo;
-	int freq;
-	struct tree *esq, *dir;
+typedef struct tree
+{
+    int simbolo;
+    int freq;
+    struct tree *esq, *dir;
 } Tree;
 
-typedef struct listaTree {
-	Tree *no;
-	struct listaTree *prox;
+typedef struct listaTree
+{
+    Tree *no;
+    struct listaTree *prox;
 } ListaTree;
 
 Tree *criarNo(int simbolo, int freq)
 {
-    Tree *no = (Tree*)malloc(sizeof(Tree));
+    Tree *no = (Tree *)malloc(sizeof(Tree));
     no->simbolo = simbolo;
     no->freq = freq;
     no->esq = no->dir = NULL;
@@ -20,11 +22,11 @@ Tree *criarNo(int simbolo, int freq)
 
 void inserirListaTree(ListaTree **lista, Tree *no)
 {
-    ListaTree *novo = (ListaTree*)malloc(sizeof(ListaTree));
+    ListaTree *novo = (ListaTree *)malloc(sizeof(ListaTree));
     novo->no = no;
     novo->prox = NULL;
-    
-    if(*lista == NULL || no->freq < (*lista)->no->freq)
+
+    if (*lista == NULL || no->freq < (*lista)->no->freq)
     {
         novo->prox = *lista;
         *lista = novo;
@@ -32,7 +34,7 @@ void inserirListaTree(ListaTree **lista, Tree *no)
     else
     {
         ListaTree *aux = *lista;
-        while(aux->prox != NULL && aux->prox->no->freq <= no->freq)
+        while (aux->prox != NULL && aux->prox->no->freq <= no->freq)
             aux = aux->prox;
         novo->prox = aux->prox;
         aux->prox = novo;
@@ -41,7 +43,7 @@ void inserirListaTree(ListaTree **lista, Tree *no)
 
 void preencherListaTree(ListaTree **lista, ListaPalavra *l)
 {
-    while(l != NULL)
+    while (l != NULL)
     {
         inserirListaTree(lista, criarNo(l->simbolo, l->freq));
         l = l->prox;
@@ -60,34 +62,34 @@ Tree *removerListaTree(ListaTree **lista)
 Tree *montarArvore(ListaTree **lista)
 {
     Tree *esq, *dir, *novo;
-    
-    while(*lista != NULL && (*lista)->prox != NULL)
+
+    while (*lista != NULL && (*lista)->prox != NULL)
     {
         esq = removerListaTree(lista);
         dir = removerListaTree(lista);
-        
+
         novo = criarNo(-1, esq->freq + dir->freq);
         novo->esq = esq;
         novo->dir = dir;
-        
+
         inserirListaTree(lista, novo);
     }
-    
+
     return (*lista)->no;
 }
 
 void exibeArvore(Tree *raiz, int nivel)
 {
     int i;
-    if(raiz != NULL)
+    if (raiz != NULL)
     {
         exibeArvore(raiz->dir, nivel + 1);
         printf("\n");
-        
-        for(i = 0; i < nivel; i++)
+
+        for (i = 0; i < nivel; i++)
             printf("\t");
-        
-        if(raiz->esq == NULL && raiz->dir == NULL)
+
+        if (raiz->esq == NULL && raiz->dir == NULL)
             printf("--> [%d]", raiz->simbolo);
         else
             printf("--> %d", raiz->simbolo);
@@ -99,41 +101,41 @@ void exibeArvore(Tree *raiz, int nivel)
 int alturaArvore(Tree *raiz)
 {
     int esq, dir;
-    if(raiz == NULL)
+    if (raiz == NULL)
         return -1;
-    
+
     esq = alturaArvore(raiz->esq) + 1;
     dir = alturaArvore(raiz->dir) + 1;
-    
+
     return esq > dir ? esq : dir;
 }
 
 void gravarCodHuffman(ListaPalavra *l, int simbolo, char codHuffman[])
 {
-    while(l != NULL && l->simbolo != simbolo)
+    while (l != NULL && l->simbolo != simbolo)
         l = l->prox;
-    
-    if(l != NULL)
+
+    if (l != NULL)
         strcpy(l->codHuffman, codHuffman);
 }
 
 void gerarCodHuffman(ListaPalavra *l, Tree *raiz, char caminho[], int colunas)
 {
     char esquerda[colunas], direita[colunas];
-    
-    if(raiz != NULL)
+
+    if (raiz != NULL)
     {
-	    if(raiz->esq == NULL && raiz->dir == NULL)
-	        gravarCodHuffman(l, raiz->simbolo, caminho);
-	    else
-	    {
-	    	strcpy(esquerda, caminho);
-		    strcpy(direita, caminho);
-		    strcat(esquerda, "0");
-		    strcat(direita, "1");
-		    
-		    gerarCodHuffman(l, raiz->esq, esquerda, colunas);
-		    gerarCodHuffman(l, raiz->dir, direita, colunas);
-		}
-	}
+        if (raiz->esq == NULL && raiz->dir == NULL)
+            gravarCodHuffman(l, raiz->simbolo, caminho);
+        else
+        {
+            strcpy(esquerda, caminho);
+            strcpy(direita, caminho);
+            strcat(esquerda, "0");
+            strcat(direita, "1");
+
+            gerarCodHuffman(l, raiz->esq, esquerda, colunas);
+            gerarCodHuffman(l, raiz->dir, direita, colunas);
+        }
+    }
 }

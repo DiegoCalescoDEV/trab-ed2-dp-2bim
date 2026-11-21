@@ -1,14 +1,19 @@
+/*----------------------------------------------*
+ * Diego Felippe da Fonseca Calesco - 262516187 *
+ *----------------------------------------------*/
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <locale.h>
 #include <ctype.h>
+#include <windows.h>
 
 #include "TabelaPalavra.h"
 #include "Arvore.h"
 #include "Arquivo.h"
 
-#define FRASE "O vento soprava devagar, devagar e constante. As folhas dan�avam, dan�avam pelo ch�o enquanto os p�ssaros cantavam, cantavam sem parar.."
+#define FRASE "O vento soprava devagar, devagar e constante. As folhas dançavam, dançavam pelo chão enquanto os pássaros cantavam, cantavam sem parar.."
 
 void lerTextoArquivo(char nomeArquivo[], char texto[], int capacidade)
 {
@@ -26,7 +31,7 @@ void lerTextoArquivo(char nomeArquivo[], char texto[], int capacidade)
         caractere = fgetc(arquivo);
         while (!feof(arquivo) && lidos < capacidade - 1)
         {
-            texto[lidos++] = (char)caractere;
+            texto[lidos++] = caractere;
             caractere = fgetc(arquivo);
         }
         texto[lidos] = '\0';
@@ -50,7 +55,8 @@ void lerTextoArquivo(char nomeArquivo[], char texto[], int capacidade)
 
 int main(void)
 {
-    setlocale(LC_ALL, "Portuguese");
+    setlocale(LC_ALL, "C");
+    SetConsoleOutputCP(CP_UTF8);
 
     ListaPalavra *listaPalavra;
     ListaTree *listaTree = NULL;
