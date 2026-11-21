@@ -173,7 +173,7 @@ void codificarFrase(char texto[], ListaPalavra *lista, BitWriter *writer)
 
     while (i <= (int)strlen(texto))
     {
-        vetTexto[j++] = tolower(texto[i]);
+        vetTexto[j++] = tolower((unsigned char)texto[i]);
 
         if (caractereEspecial(texto[i]) || texto[i] == '\0')
         {
@@ -184,7 +184,7 @@ void codificarFrase(char texto[], ListaPalavra *lista, BitWriter *writer)
                 codificarPalavra(vetTexto, lista, writer);
             }
 
-            if (caractereEspecial(texto[i]))
+            if (texto[i] == ' ')
             {
                 vetSeparador[0] = texto[i];
                 codificarPalavra(vetSeparador, lista, writer);

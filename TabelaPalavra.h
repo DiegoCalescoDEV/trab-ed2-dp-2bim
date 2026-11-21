@@ -32,7 +32,11 @@ void inicializarListaPalavra(ListaPalavra **l)
 
 char caractereEspecial(char letra)
 {
-	return (letra == ' ' || letra == '.' || letra == '?' || letra == '!'|| letra == ',' || letra == ';' || letra == ':');
+	return (letra == ' ' ||
+	        (letra >= '!' && letra <= '/') ||
+	        (letra >= ':' && letra <= '@') ||
+	        (letra >= '[' && letra <= '`') ||
+	        (letra >= '{' && letra <= '~'));
 }
 
 void somarFrequenciaPalavra(ListaPalavra **l, char palavra[])
@@ -63,7 +67,7 @@ void processarTexto(ListaPalavra **l, char texto[])
 	
 	while(i <= strlen(texto))
 	{
-		vetTexto[j++] = tolower(texto[i]);
+		vetTexto[j++] = tolower((unsigned char)texto[i]);
 		
 		if(caractereEspecial(texto[i]) || texto[i] == '\0')
 		{
@@ -73,7 +77,7 @@ void processarTexto(ListaPalavra **l, char texto[])
 		        somarFrequenciaPalavra(l, vetTexto);
 		    }
 		    
-		    if(caractereEspecial(texto[i]))
+		    if(texto[i] == ' ')
 		    {
 		        vetSeparador[0] = texto[i];
 		        somarFrequenciaPalavra(l, vetSeparador);
